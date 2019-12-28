@@ -9,6 +9,7 @@ Plug 'tpope/vim-ragtag'
 Plug 'vim-airline/vim-airline'
 Plug 'pangloss/vim-javascript'
 Plug 'elixir-editors/vim-elixir'
+Plug 'junegunn/fzf.vim'
 
 call plug#end()
 
@@ -17,7 +18,7 @@ filetype plugin on
 
 " Colors {{{
 syntax enable
-colorscheme jellybeans
+colorscheme jellybeans 
 set t_Co=256
 "}}}
 
@@ -100,3 +101,6 @@ set shortmess+=c
 
 "}}}
 
+" Coc-Prettier {{{
+command! -nargs=0 Prettier :CocCommand prettier.formatFile 
+" }}}
