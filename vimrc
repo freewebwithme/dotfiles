@@ -10,6 +10,7 @@ Plug 'vim-airline/vim-airline'
 Plug 'pangloss/vim-javascript'
 Plug 'elixir-editors/vim-elixir'
 Plug 'junegunn/fzf.vim'
+Plug 'arcticicestudio/nord-vim'
 
 call plug#end()
 
@@ -18,7 +19,7 @@ filetype plugin on
 
 " Colors {{{
 syntax enable
-colorscheme jellybeans 
+colorscheme nord 
 set t_Co=256
 "}}}
 
@@ -32,7 +33,7 @@ set smartindent
 " UI Layout {{{
 set number
 set showcmd
-set nocursorline
+set cursorline
 set showmatch
 set wildmenu
 " }}}
