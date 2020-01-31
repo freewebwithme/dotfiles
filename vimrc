@@ -11,6 +11,7 @@ Plug 'pangloss/vim-javascript'
 Plug 'elixir-editors/vim-elixir'
 Plug 'junegunn/fzf.vim'
 Plug 'arcticicestudio/nord-vim'
+Plug 'mhinz/vim-mix-format'
 
 call plug#end()
 
@@ -105,3 +106,5 @@ set shortmess+=c
 " Coc-Prettier {{{
 command! -nargs=0 Prettier :CocCommand prettier.formatFile 
 " }}}
+
+let g:mix_format_on_save = 1
