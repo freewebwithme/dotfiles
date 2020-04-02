@@ -30,7 +30,11 @@ values."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(html
+   '(
+     (typescript :variables
+                 typescript-fmt-on-save t
+                 typescript-fmt-tool 'typescript-formatter)
+     html
      ruby
      yaml
      (elixir :variables
@@ -444,5 +448,7 @@ This function is called at the very end of Spacemacs initialization."
  '(info-reference-item ((t (:background "brightblack"))))
  '(lazy-highlight ((t (:background "red"))))
  '(tooltip ((t (:background "magenta"))))
+ '(isearch ((t (:background "green"))))
+ '(show-paren-match ((t (:background "brightblack"))))
  '(lsp-ui-doc-background ((t (:background "#424242")))))
 )
