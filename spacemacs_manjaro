@@ -48,6 +48,7 @@ values."
            lsp-dart-sdk-dir "/home/taehwan/flutter/bin/cache/dart-sdk"
            lsp-enable-on-type-formatting t
            dart-server-format-on-save t
+           lsp-dart-suggest-from-unimported-libraries nil
            )
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
@@ -56,7 +57,7 @@ values."
      ;; ----------------------------------------------------------------
      react
      helm
-     auto-completion
+     ;; auto-completion
      ;; better-defaults
      emacs-lisp
      git
@@ -74,11 +75,11 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(exunit dap-mode highlight-indent-guides lsp-dart)
+   dotspacemacs-additional-packages '(exunit dap-mode highlight-indent-guides lsp-dart parrot company-box) 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(alchemist)
+   dotspacemacs-excluded-packages '(alchemist company-tern auto-completion)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -86,7 +87,7 @@ values."
    ;; `used-but-keep-unused' installs only the used packages but won't uninstall
    ;; them if they become unused. `all' installs *all* packages supported by
    ;; Spacemacs and never uninstall them. (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+   dotspacemacs-install-packages 'used-but-keep-unused))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -311,7 +312,7 @@ values."
    ;; to aggressively delete empty line and long sequences of whitespace,
    ;; `trailing' to delete only the whitespace at end of lines, `changed'to
    ;; delete only whitespace for changed lines or `nil' to disable cleanup.
-   ;; (default nil)
+   ;; (default nilr
    dotspacemacs-whitespace-cleanup nil
    ))
 
@@ -336,34 +337,62 @@ you should place your code here."
     :ensure t
     :diminish lsp-mode
     :hook
-    (elixir-mode . lsp)
+    ((dart-mode . lsp)
+     (elixir-mode . lsp))
     :init
-    (add-to-list 'exec-path "/home/taehwan/.elixir-ls/release"))
-  (use-package lsp-dart
-    :ensure t
-    :hook (dart-mode . lsp))
-  (use-package lsp-ui :ensure t)
+    (setq lsp-log-io nil
+          lsp-semantic-highlighting :immediate)
+    (add-to-list 'exec-path "/home/taehwan/.elixir-ls/release")
+    )
 
-  ;;(setq flycheck-elixir-credo-strict t)
-  ;;(defvar lsp-elixir--config-options (make-hash-table))
+  (use-package lsp-ui
+                :after lsp-mode
+                :commands lsp-ui-mode
+                :ensure t
+                :config
+                (setq lsp-ui-peek-list-width 60
+                      lsp-ui-peek-fontify 'always
+                      lsp-ui-doc-max-width 70))
+
+  (use-package company
+                :config
+                (setq company-minimum-prefix-length 3
+                      company-tooltip-align-annotations t
+                      company-show-numbers t))
+
+  (use-package company-box
+                :hook (company-mode . company-box-mode)
+                :config
+                ;; Fix <prior>/<next> on company-box
+                (advice-add 'company-next-page :after #'company-box--change-line)
+                (advice-add 'company-previous-page :after #'company-box--change-line)
+                (advice-add 'company-search-candidates :after #'company-box--change-line)
+                (advice-add 'company-filter-candidates :after #'company-box--change-line)
+                (advice-add 'company-search-repeat-forward :after #'company-box--change-line)
+                (advice-add 'company-search-repeat-backward :after #'company-box--change-line))
+  (use-package yasnippet
+    :ensure t
+    :config(yas-global-mode))
+  
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
   (setq highlight-indent-guides-method 'character)
+  (setq lsp-file-watch-threshold 7000)
+  (setq lsp-ui-flycheck-enable t)
+
   (require 'highlight-indent-guides)
   (setq highlight-indent-guides-auto-enabled nil)
   (set-face-foreground 'highlight-indent-guides-character-face "darkgray")
 
   (add-hook 'lsp-after-initialize-hook
-            ;;(lambda()
-             ;;  (lsp--set-configuration `(:elixirLS, lsp-elixir--config-options)))
-            (lambda() (flycheck-add-next-checker 'lsp-ui 'elixir-credo))
+            (lambda() (flycheck-add-next-checker 'lsp 'elixir-credo))
             )
   (add-hook 'elixir-mode-hook
             (lambda()
               (add-hook 'before-save-hook #'lsp-format-buffer nil t)
               ))
-  '(lsp-file-watch-threshold 3000)
   '(lsp-prefer-flymake nil)
-  '(lsp-ui-flycheck-enable t)
+  (setq read-process-output-max (* 1024 1024))
+  
   (with-eval-after-load 'elixir-mode
     (spacemacs/declare-prefix-for-mode 'elixir-mode
       "mt" "tests" "testing related functionality")
@@ -431,12 +460,10 @@ This function is called at the very end of Spacemacs initialization."
  '(ansi-color-names-vector
    ["#080808" "#d70000" "#67b11d" "#875f00" "#268bd2" "#af00df" "#00ffff" "#b2b2b2"])
  '(custom-safe-themes
-   (quote
-    ("7f6d4aebcc44c264a64e714c3d9d1e903284305fd7e319e7cb73345a9994f5ef" default)))
+   '("7f6d4aebcc44c264a64e714c3d9d1e903284305fd7e319e7cb73345a9994f5ef" default))
  '(evil-want-Y-yank-to-eol nil)
  '(hl-todo-keyword-faces
-   (quote
-    (("TODO" . "#dc752f")
+   '(("TODO" . "#dc752f")
      ("NEXT" . "#dc752f")
      ("THEM" . "#2aa198")
      ("PROG" . "#268bd2")
@@ -450,11 +477,10 @@ This function is called at the very end of Spacemacs initialization."
      ("TEMP" . "#875f00")
      ("FIXME" . "#dc752f")
      ("XXX+" . "#dc752f")
-     ("\\?\\?\\?+" . "#dc752f"))))
+     ("\\?\\?\\?+" . "#dc752f")))
  '(package-selected-packages
-   (quote
-    (highlight-indent-guides flutter-l10n-flycheck flutter dart-server dart-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode nord-theme ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async)))
- '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#262626"))))
+   '(company-box parrot highlight-indent-guides flutter-l10n-flycheck flutter dart-server dart-mode web-beautify livid-mode skewer-mode simple-httpd json-mode json-snatcher json-reformat js2-refactor yasnippet multiple-cursors js2-mode js-doc coffee-mode nord-theme ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))
+ '(pdf-view-midnight-colors '("#b2b2b2" . "#262626")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
