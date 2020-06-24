@@ -1,0 +1,44 @@
+{
+  "files.watcherExclude": {
+    "**/deps/**": true
+  },
+  "workbench.colorTheme": "Nord",
+  "workbench.iconTheme": "vscode-icons",
+  "vim.useSystemClipboard": true,
+  "editor.formatOnSave": true,
+  "editor.fontWeight": "500",
+  "elixirLS.suggestSpecs": false,
+  "editor.fontFamily": "'Source code Pro', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+  "editor.fontSize": 15,
+  "editor.minimap.enabled": false,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "editor.tabSize": 2,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    "*.js": "javascriptreact"
+  },
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["f", "d"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "f", "s"],
+      "commands": [":w"]
+    },
+    {
+      "before": ["<leader>", "d"],
+      "commands": [":q"]
+    }
+  ],
+  "vim.leader": "<space>"
+}
